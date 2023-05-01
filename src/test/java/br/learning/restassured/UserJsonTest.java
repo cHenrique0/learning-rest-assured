@@ -7,6 +7,8 @@ import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.request;
 import static org.hamcrest.Matchers.*;
@@ -80,5 +82,20 @@ public class UserJsonTest {
                 .log().body()
                 .body(notNullValue())
                 .body("error", is("Usuário inexistente"));
+    }
+
+    @Test
+    public void testValidandoLista() {
+        given()
+        .when()
+                .get("https://restapi.wcaquino.me/users")
+        .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body(notNullValue())
+                .body("$", hasSize(3)) // $ significa raiz do json, pode não colocar o $ que vai funcionar.
+                .body("name", hasItems("João da Silva", "Maria Joaquina", "Ana Júlia"))
+                .body("age[1]", is(25))
+                .body("filhos.name", hasItem(Arrays.asList("Zezinho", "Luizinho")))
+                .body("salary", contains(1234.5678f, 2500, null));
     }
 }
