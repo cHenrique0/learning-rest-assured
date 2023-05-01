@@ -41,4 +41,16 @@ public class UserJsonTest {
         int id = JsonPath.from(reponse.asString()).getInt("id");
         Assertions.assertEquals(1, id);
     }
+
+    @Test
+    public void testValidandoJsonSegundoNivel() {
+        given()
+        .when()
+                .get("https://restapi.wcaquino.me/users/2")
+        .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body(notNullValue())
+                .body("name", containsString("Joaquina"))
+                .body("endereco.rua", is("Rua dos bobos"));
+    }
 }
