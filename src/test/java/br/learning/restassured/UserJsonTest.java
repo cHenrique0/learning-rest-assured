@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.request;
@@ -116,5 +117,20 @@ public class UserJsonTest {
                 .body("find{it.age <= 25 }.name", is("Maria Joaquina"))
                 .body("findAll{it.name.contains('n')}.name", hasItems("Maria Joaquina", "Ana Júlia"))
                 .body("findAll{it.name.length()}.name", hasItems("João da Silva", "Maria Joaquina"));
+    }
+
+    @Test
+    public void testValidandoJsonpath() {
+        List<String> names =
+                given()
+                .when()
+                        .get("https://restapi.wcaquino.me/users")
+                .then()
+                        .extract()
+                            .path("name.findAll{it.startsWith('Maria')}");
+
+        Assertions.assertEquals(1, names.size());
+        Assertions.assertTrue(names.get(0).equalsIgnoreCase("maria joaquina"));
+        Assertions.assertEquals(names.get(0).toUpperCase(), "maria joaquina".toUpperCase());
     }
 }
