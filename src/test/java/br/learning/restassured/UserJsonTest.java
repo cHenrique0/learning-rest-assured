@@ -98,4 +98,23 @@ public class UserJsonTest {
                 .body("filhos.name", hasItem(Arrays.asList("Zezinho", "Luizinho")))
                 .body("salary", contains(1234.5678f, 2500, null));
     }
+
+    @Test
+    public void testVerificacoesAvancadas() {
+        given()
+        .when()
+                .get("https://restapi.wcaquino.me/users")
+        .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body(notNullValue())
+                /* 'it' faz referência a idade atual no loop */
+                .body("age.findAll{it <= 25}.size()", is(2))
+                .body("age.findAll{it <= 25 && it > 20}.size()", is(1))
+                /* 'it' faz referência ao objeto atual no loop */
+                .body("findAll{it.age <= 25 }[0].name", is("Maria Joaquina"))
+                .body("findAll{it.age <= 25 }[-1].name", is("Ana Júlia"))
+                .body("find{it.age <= 25 }.name", is("Maria Joaquina"))
+                .body("findAll{it.name.contains('n')}.name", hasItems("Maria Joaquina", "Ana Júlia"))
+                .body("findAll{it.name.length()}.name", hasItems("João da Silva", "Maria Joaquina"));
+    }
 }
